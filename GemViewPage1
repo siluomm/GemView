@@ -1,0 +1,147 @@
+<html>
+<title>GemView POC</title>
+
+
+
+<body>
+    <div class="vfqa-gemview-container">
+        <canvas id="myCanvas" width="500" height="100" style="border:1px solid #000000;"></canvas>
+        <button id="vfqa-push-Gemivew" onclick="PushGemView()">Push To GemView</button>
+        <button id="vfqa-push-Desktop" onclick="PushDesktop()">Push To Desktop</button>
+        <button id="vfqa-Sign" onclick="SignCAF()">Sign</button>
+    </div>
+
+    <script>
+       function PushGemView(){
+
+            var pushCurrentWindowTab = {
+                "pushCurrentTab": "true"
+            };
+            var pushCurrentWindowTabData = JSON.stringify(pushCurrentWindowTab);
+            var element = document.createElement("MyExtensionDataElementPushTab");
+            element.setAttribute("msgAttributePushCurrentTab", pushCurrentWindowTabData);
+            document.documentElement.appendChild(element);
+            var evt = document.createEvent('Events');
+            evt.initEvent('PushCurrentTabEvent', true, false);
+            element.dispatchEvent(evt);
+
+        }
+
+        ﻿
+     function PushDesktop(){
+
+            var pushCurrentWindowTab = {
+                "pushCurrentTab": "false"
+            };
+            var pushCurrentWindowTabData = JSON.stringify(pushCurrentWindowTab);
+            var element = document.createElement("MyExtensionDataElementPushTab");
+            element.setAttribute("msgAttributePushCurrentTab", pushCurrentWindowTabData);
+            document.documentElement.appendChild(element);
+            var evt = document.createEvent('Events');
+            evt.initEvent('PushCurrentTabEvent', true, false);
+            element.dispatchEvent(evt);
+
+        }
+
+        ﻿
+      function SignCAF(){
+
+            var message = {
+                "firstName": "",
+                "lastName": "",
+                "eMail": "",
+                "location": "",
+                "imageFormat": 1,
+                "imageX": 500,
+                "imageY": 100,
+                "imageTransparency": false,
+                "imageScaling": false,
+                "maxUpScalePercent": 0.0,
+                "rawDataFormat": "SIG",
+                "minSigPoints": 25,
+                "penThickness": 1,
+                "penColor": "Black",
+                "encryptionMode": 2,
+                "encryptionKey": "Test",
+                "sigCompressionMode": 1,
+                "customWindow": true,
+                "signingWindowProperties": {
+                    "signingWindow": {
+                        "backColor": "#e6e6e6",
+                        "size": {
+                            "width": 1000,
+                            "height": 500
+                        },
+                        "location": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "windowState": 0,
+                        "formBorderStyle": 3
+                    },
+                    "signingArea": {
+                        "backColor": "#ffffff",
+                        "size": {
+                            "width": 1000,
+                            "height": 340
+                        },
+                        "location": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "dock": 5
+                    },
+                    "signingWindowIconButtonsContainer": {
+                        "backColor": "#e6e6e6",
+                        "size": 60,
+                        "padding": {
+                            "all": -1,
+                            "left": 0,
+                            "top": 0,
+                            "right": 4,
+                            "bottom": 0
+                        },
+                        "dock": 1
+                    },
+                    "signingWindowIconButtons": {
+                        "backColor": "#dbdbdb",
+                        "size": 50,
+                        "margin": {
+                            "all": -1,
+                            "left": 0,
+                            "top": 0,
+                            "right": 1,
+                            "bottom": 0
+                        }
+                    }
+                }
+            }
+            var messageData = JSON.stringify(message);
+            var element = document.createElement("MyExtensionDataElement");
+            element.setAttribute("messageAttribute", messageData);
+            document.documentElement.appendChild(element);
+            var evt = document.createEvent("Events");
+            evt.initEvent("SignStartEvent", true, false);
+            element.dispatchEvent(evt);
+            top.document.addEventListener('SignResponse', SignResponse, false);
+
+            function SignResponse(event) {
+                var str = event.target.getAttribute("msgAttribute");
+                var obj = JSON.parse(str);
+                console.log(obj);
+                var cnv = document.getElementById('myCanvas'); //the canvas that the signature image will be displayed once the signing process is complete
+                var ctx = cnv.getContext("2d");
+                
+
+                var img = new Image();
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0, 500, 100); //Set the canvas to contain the signature image
+
+                }
+                img.src = "data:image/png;base64," + obj.imageData;
+            }
+
+        }
+    </script>
+</body>
+<html>
